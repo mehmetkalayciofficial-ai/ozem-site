@@ -717,29 +717,12 @@ footer{background:var(--navy);color:var(--ivory);padding:80px 0 40px;border-top:
     radial-gradient(ellipse 40% 30% at 28% 22%, rgba(180,230,255,.35), transparent 70%);
   pointer-events:none;z-index:2;
 }
-.earth-rotor{
+.earth-canvas{
   position:absolute;inset:0;z-index:1;
-  will-change:background-position;
-  background-image:url("earth.jpg"), url("earth.jpg");
-  background-repeat:no-repeat, no-repeat;
-  background-size:auto 140%, auto 140%;
-  background-position:0 center, 100% center;
-  filter:saturate(1.15) contrast(1.08) brightness(1.02);
-}
-.earth-hubs{
-  position:absolute;inset:0;z-index:2;
   width:100%;height:100%;
-  will-change:transform;
-  pointer-events:none;
+  border-radius:50%;
+  image-rendering:auto;
 }
-.earth-hubs svg{
-  position:absolute;top:50%;left:0;
-  height:140%;width:auto;
-  transform:translateY(-50%);
-  display:block;
-}
-.earth-hubs .hub{fill:#14B8A6;filter:drop-shadow(0 0 8px rgba(20,184,166,1)) drop-shadow(0 0 14px rgba(20,184,166,.6))}
-.earth-hubs .hub-ring{fill:none;stroke:#14B8A6;stroke-width:1.2;opacity:.6}
 .earth-hud{
   position:absolute;bottom:18px;left:50%;transform:translateX(-50%);
   font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--teal-2);
@@ -1377,32 +1360,7 @@ footer{background:var(--navy);color:var(--ivory);padding:80px 0 40px;border-top:
       <span class="corner c-br"></span>
       <span class="earth-label">LIVE · 42 ACTIVE CORRIDORS · DRAG TO ROTATE</span>
       <div class="earth" id="earth">
-        <div class="earth-rotor" id="earthRotor"></div>
-        <div class="earth-hubs" id="earthHubs">
-          <svg viewBox="0 0 2560 640" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <g id="hubs">
-                <g><circle class="hub-ring" cx="1670" cy="231" r="12"/><circle class="hub" cx="1670" cy="231" r="6"/></g>
-                <g><circle class="hub-ring" cx="1543" cy="324" r="12"/><circle class="hub" cx="1543" cy="324" r="6"/></g>
-                <g><circle class="hub-ring" cx="1500" cy="213" r="12"/><circle class="hub" cx="1500" cy="213" r="6"/></g>
-                <g><circle class="hub-ring" cx="1771" cy="174" r="12"/><circle class="hub" cx="1771" cy="174" r="6"/></g>
-                <g><circle class="hub-ring" cx="1827" cy="167" r="12"/><circle class="hub" cx="1827" cy="167" r="6"/></g>
-                <g><circle class="hub-ring" cx="1827" cy="220" r="12"/><circle class="hub" cx="1827" cy="220" r="6"/></g>
-                <g><circle class="hub-ring" cx="1991" cy="270" r="12"/><circle class="hub" cx="1991" cy="270" r="6"/></g>
-                <g><circle class="hub-ring" cx="2040" cy="341" r="12"/><circle class="hub" cx="2040" cy="341" r="6"/></g>
-                <g><circle class="hub-ring" cx="2140" cy="270" r="12"/><circle class="hub" cx="2140" cy="270" r="6"/></g>
-                <g><circle class="hub-ring" cx="796" cy="377" r="12"/><circle class="hub" cx="796" cy="377" r="6"/></g>
-                <g><circle class="hub-ring" cx="782" cy="256" r="12"/><circle class="hub" cx="782" cy="256" r="6"/></g>
-                <g><circle class="hub-ring" cx="661" cy="270" r="12"/><circle class="hub" cx="661" cy="270" r="6"/></g>
-                <g><circle class="hub-ring" cx="1159" cy="267" r="12"/><circle class="hub" cx="1159" cy="267" r="6"/></g>
-                <g><circle class="hub-ring" cx="1480" cy="374" r="12"/><circle class="hub" cx="1480" cy="374" r="6"/></g>
-                <g><circle class="hub-ring" cx="1500" cy="381" r="12"/><circle class="hub" cx="1500" cy="381" r="6"/></g>
-              </g>
-            </defs>
-            <use href="#hubs" x="0"/>
-            <use href="#hubs" x="1280"/>
-          </svg>
-        </div>
+        <canvas class="earth-canvas" id="earthCanvas"></canvas>
       </div>
       <div class="earth-hud">
         <span>LON 000°</span><span class="sep">·</span>
@@ -1944,51 +1902,144 @@ rxForm.addEventListener('submit', (e)=>{
   rxMsg.classList.add('show');
 });
 
-// Earth globe — seamless horizontal rotation + drag using Blue Marble texture
+// Earth globe — true 3D sphere rendered in canvas (yaw + pitch, full 360)
 const earth = document.getElementById('earth');
-const earthRotor = document.getElementById('earthRotor');
-const earthHubs = document.getElementById('earthHubs');
-if (earth && earthRotor) {
-  // Texture is 1280x640 equirectangular. Rendered at height = earth.height * 1.4, width keeps ratio.
-  // loop distance (one full texture width) in rendered px:
-  const size = earth.clientWidth;
-  const renderedH = size * 1.4;
-  const loop = (1280 / 640) * renderedH;
-  let x = 0, speed = 0.35;
-  let dragging = false, lastX = 0;
+const earthCanvas = document.getElementById('earthCanvas');
+if (earth && earthCanvas) {
+  const SIZE = Math.min(earth.clientWidth, 480) | 0;
+  const W = SIZE, H = SIZE, R = W / 2;
+  earthCanvas.width = W;
+  earthCanvas.height = H;
+  const ctx = earthCanvas.getContext('2d', { alpha: true });
+
+  let tex = null, tW = 0, tH = 0;
+  let yaw = 0, pitch = 0;
+  let dragging = false, lastX = 0, lastY = 0;
+  const autoSpeed = 0.0035;
+
   const hud = document.querySelector('.earth-hud');
   const lonEl = hud ? hud.children[0] : null;
-  function apply(){
-    const wx = ((x % loop) + loop) % loop;
-    // move background image and hub overlay together
-    earthRotor.style.backgroundPosition = `${-wx}px center, ${loop - wx}px center`;
-    if (earthHubs) earthHubs.style.transform = `translateX(${-wx}px)`;
+
+  // Load texture into an offscreen canvas and extract pixels
+  const img = new Image();
+  img.crossOrigin = 'anonymous';
+  img.src = 'earth.jpg';
+  img.onload = () => {
+    const off = document.createElement('canvas');
+    off.width = img.width; off.height = img.height;
+    const octx = off.getContext('2d');
+    octx.drawImage(img, 0, 0);
+    tex = octx.getImageData(0, 0, img.width, img.height).data;
+    tW = img.width; tH = img.height;
+    requestAnimationFrame(render);
+  };
+
+  // Hubs to draw on sphere surface (lat, lon) in degrees
+  const hubs = [
+    [25,55],[-4,37],[30,31],[41,69],[43,77],[28,77],[14,100],
+    [-6,107],[14,121],[-18,-68],[18,-70],[14,-88],[9,-13],[-15,28],[-17,31]
+  ];
+
+  const out = ctx.createImageData(W, H);
+  const outData = out.data;
+  const TWO_PI = Math.PI * 2;
+  const HALF_PI = Math.PI / 2;
+
+  function render() {
+    if (!tex) return;
+    if (!dragging) yaw += autoSpeed;
+
+    const cy = Math.cos(pitch), sy = Math.sin(pitch);
+    const cx = Math.cos(yaw), sx = Math.sin(yaw);
+
+    let p = 0;
+    for (let y = 0; y < H; y++) {
+      const ny = (y - R) / R;
+      const ny2 = ny * ny;
+      for (let x = 0; x < W; x++, p += 4) {
+        const nx = (x - R) / R;
+        const d2 = nx * nx + ny2;
+        if (d2 > 1) {
+          outData[p + 3] = 0;
+          continue;
+        }
+        const nz = Math.sqrt(1 - d2);
+        // screen (nx, -ny, nz) -> world by rotating pitch then yaw
+        const py = -ny;
+        const y1 = py * cy - nz * sy;
+        const z1 = py * sy + nz * cy;
+        const wx = nx * cx + z1 * sx;
+        const wz = -nx * sx + z1 * cx;
+        // lat/lon on texture
+        const lat = Math.asin(y1);
+        const lon = Math.atan2(wx, wz);
+        let u = (lon + Math.PI) / TWO_PI;
+        let v = (HALF_PI - lat) / Math.PI;
+        if (u < 0) u += 1; else if (u >= 1) u -= 1;
+        if (v < 0) v = 0; else if (v >= 1) v = 0.9999;
+        const tx = (u * tW) | 0;
+        const ty = (v * tH) | 0;
+        const ti = (ty * tW + tx) * 4;
+        // Simple directional shading for depth (light from upper-left)
+        const lum = 0.55 + 0.45 * Math.max(0, nx * 0.35 + ny * -0.35 + nz * 0.87);
+        outData[p]     = tex[ti]     * lum;
+        outData[p + 1] = tex[ti + 1] * lum;
+        outData[p + 2] = tex[ti + 2] * lum;
+        outData[p + 3] = 255;
+      }
+    }
+    ctx.putImageData(out, 0, 0);
+
+    // Draw hubs on top, projecting to screen
+    for (let i = 0; i < hubs.length; i++) {
+      const latR = hubs[i][0] * Math.PI / 180;
+      const lonR = hubs[i][1] * Math.PI / 180;
+      const px = Math.cos(latR) * Math.sin(lonR);
+      const pyw = Math.sin(latR);
+      const pz = Math.cos(latR) * Math.cos(lonR);
+      // inverse yaw (rotate world by -yaw around Y)
+      const ix = px * cx - pz * sx;
+      const iz = px * sx + pz * cx;
+      // inverse pitch (rotate world by -pitch around X)
+      const iy = pyw * cy + iz * sy;
+      const iz2 = -pyw * sy + iz * cy;
+      if (iz2 < 0) continue; // behind sphere
+      const sxp = R + ix * R;
+      const syp = R - iy * R;
+      ctx.beginPath();
+      ctx.arc(sxp, syp, 4, 0, TWO_PI);
+      ctx.fillStyle = '#14B8A6';
+      ctx.shadowColor = 'rgba(20,184,166,.9)';
+      ctx.shadowBlur = 10;
+      ctx.fill();
+      ctx.shadowBlur = 0;
+    }
+
     if (lonEl) {
-      const lon = Math.round((wx / loop) * 360) % 360;
+      const lon = Math.round(((yaw * 180 / Math.PI) % 360 + 360) % 360);
       lonEl.textContent = `LON ${String(lon).padStart(3,'0')}°`;
     }
+    requestAnimationFrame(render);
   }
-  function tick(){
-    if (!dragging) x += speed;
-    apply();
-    requestAnimationFrame(tick);
-  }
-  earth.addEventListener('pointerdown', e=>{
-    dragging = true; lastX = e.clientX;
+
+  earth.addEventListener('pointerdown', e => {
+    dragging = true; lastX = e.clientX; lastY = e.clientY;
     earth.classList.add('drag');
     earth.setPointerCapture(e.pointerId);
   });
-  earth.addEventListener('pointerup', e=>{
+  earth.addEventListener('pointerup', e => {
     dragging = false;
     earth.classList.remove('drag');
     try { earth.releasePointerCapture(e.pointerId); } catch(_) {}
   });
-  earth.addEventListener('pointermove', e=>{
+  earth.addEventListener('pointermove', e => {
     if (!dragging) return;
-    x -= (e.clientX - lastX) * 1.4;
-    lastX = e.clientX;
+    yaw += (e.clientX - lastX) * 0.008;
+    pitch += (e.clientY - lastY) * 0.008;
+    if (pitch > HALF_PI - 0.05) pitch = HALF_PI - 0.05;
+    if (pitch < -HALF_PI + 0.05) pitch = -HALF_PI + 0.05;
+    lastX = e.clientX; lastY = e.clientY;
   });
-  tick();
 }
 
 // Video click-to-play (only loads iframe on click)
