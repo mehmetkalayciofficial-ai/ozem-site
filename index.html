@@ -666,6 +666,104 @@ footer{background:var(--navy);color:var(--ivory);padding:80px 0 40px;border-top:
 }
 .rx-fallback a{color:var(--teal);text-decoration:underline;text-underline-offset:3px}
 
+/* ---------- HOLOGRAM GLOBE ---------- */
+.globe-scene{
+  position:relative;
+  display:flex;align-items:center;justify-content:center;
+  padding:40px 0 60px;
+  perspective:1400px;
+  min-height:560px;
+}
+.globe-scene::before{
+  content:"";position:absolute;left:50%;top:52%;
+  width:620px;height:620px;transform:translate(-50%,-50%);
+  background:radial-gradient(circle,rgba(20,184,166,.18),transparent 55%);
+  pointer-events:none;filter:blur(30px);
+}
+.globe-scene::after{
+  content:"";position:absolute;left:50%;top:52%;
+  width:440px;height:440px;border-radius:50%;transform:translate(-50%,-50%);
+  background:radial-gradient(circle at 30% 30%,rgba(20,184,166,.12),rgba(10,22,40,0) 60%);
+  pointer-events:none;
+}
+.globe{
+  width:460px;height:460px;position:relative;
+  transform-style:preserve-3d;
+  cursor:grab;touch-action:none;user-select:none;
+}
+.globe.drag{cursor:grabbing}
+.ring{
+  position:absolute;inset:0;
+  border:1px solid rgba(20,184,166,.42);
+  border-radius:50%;
+  box-shadow:inset 0 0 60px rgba(20,184,166,.08),0 0 24px rgba(20,184,166,.08);
+}
+.ring.eq{
+  border-color:rgba(20,184,166,.85);
+  border-width:1.5px;
+  box-shadow:inset 0 0 80px rgba(20,184,166,.12),0 0 50px rgba(20,184,166,.25);
+}
+.ring.m1{transform:rotateY(0deg)}
+.ring.m2{transform:rotateY(22.5deg)}
+.ring.m3{transform:rotateY(45deg)}
+.ring.m4{transform:rotateY(67.5deg)}
+.ring.m5{transform:rotateY(90deg)}
+.ring.m6{transform:rotateY(112.5deg)}
+.ring.m7{transform:rotateY(135deg)}
+.ring.m8{transform:rotateY(157.5deg)}
+/* latitude "slices" drawn as thin rings via scaleY */
+.lat{
+  position:absolute;left:50%;top:50%;
+  border:1px solid rgba(20,184,166,.28);
+  border-radius:50%;
+  transform-origin:center;
+}
+.lat.l1{width:440px;height:440px;margin:-220px 0 0 -220px;transform:rotateX(75deg)}
+.lat.l2{width:440px;height:440px;margin:-220px 0 0 -220px;transform:rotateX(60deg)}
+.lat.l3{width:440px;height:440px;margin:-220px 0 0 -220px;transform:rotateX(45deg)}
+.lat.l4{width:440px;height:440px;margin:-220px 0 0 -220px;transform:rotateX(30deg)}
+.lat.l5{width:440px;height:440px;margin:-220px 0 0 -220px;transform:rotateX(15deg)}
+.hub{
+  position:absolute;left:50%;top:50%;
+  width:10px;height:10px;margin:-5px 0 0 -5px;
+  transform-style:preserve-3d;
+  transform:rotateY(var(--lon)) rotateX(calc(-1 * var(--lat))) translateZ(228px);
+}
+.hub::before{
+  content:"";position:absolute;inset:0;border-radius:50%;
+  background:var(--teal-2);
+  box-shadow:0 0 12px var(--teal-2),0 0 24px rgba(20,184,166,.8);
+}
+.hub::after{
+  content:"";position:absolute;inset:-8px;border-radius:50%;
+  border:1px solid var(--teal-2);opacity:.4;
+  animation:hubPulse 3s var(--ease) infinite;
+}
+@keyframes hubPulse{
+  0%{transform:scale(.6);opacity:.6}
+  100%{transform:scale(2);opacity:0}
+}
+.globe-hud{
+  position:absolute;bottom:18px;left:50%;transform:translateX(-50%);
+  font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--teal-2);
+  display:flex;gap:16px;text-transform:uppercase;white-space:nowrap;
+  pointer-events:none;
+}
+.globe-hud .sep{color:rgba(20,184,166,.4)}
+.globe-scene .corner{
+  position:absolute;width:28px;height:28px;border:1px solid var(--teal-2);opacity:.6;
+  pointer-events:none;
+}
+.globe-scene .c-tl{top:20px;left:20px;border-right:0;border-bottom:0}
+.globe-scene .c-tr{top:20px;right:20px;border-left:0;border-bottom:0}
+.globe-scene .c-bl{bottom:20px;left:20px;border-right:0;border-top:0}
+.globe-scene .c-br{bottom:20px;right:20px;border-left:0;border-top:0}
+.globe-label{
+  position:absolute;top:24px;left:50%;transform:translateX(-50%);
+  font-family:var(--mono);font-size:10px;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--teal-2);opacity:.7;
+}
+
 /* ---------- RESPONSIVE ---------- */
 @media (max-width:960px){
   section{padding:100px 0}
@@ -674,6 +772,10 @@ footer{background:var(--navy);color:var(--ivory);padding:80px 0 40px;border-top:
   .hero{padding:140px 0 60px}
   .hero-grid{grid-template-columns:1fr;gap:60px}
   .showcase-hero{grid-template-columns:1fr;gap:20px;margin-top:56px}
+  .globe{width:320px;height:320px}
+  .lat.l1,.lat.l2,.lat.l3,.lat.l4,.lat.l5{width:320px;height:320px;margin:-160px 0 0 -160px}
+  .hub{transform:rotateY(var(--lon)) rotateX(calc(-1 * var(--lat))) translateZ(158px)}
+  .globe-scene{min-height:420px}
   .reviews-grid{columns:2}
   .features-table thead th{font-size:16px}
   .features-table tbody th{width:30%}
@@ -1074,7 +1176,7 @@ footer{background:var(--navy);color:var(--ivory);padding:80px 0 40px;border-top:
     <div class="section-head reveal">
       <div>
         <span class="eyebrow">Product specifications</span>
-        <h2 style="margin-top:20px">Ozempic &amp; Mounjaro —<br>Özellikleri nelerdir?</h2>
+        <h2 style="margin-top:20px">Ozempic &amp; Mounjaro —<br>Product Features.</h2>
       </div>
       <p class="lede">
         A side-by-side reference on the two products we specialise in. This is general
@@ -1188,7 +1290,52 @@ footer{background:var(--navy);color:var(--ivory);padding:80px 0 40px;border-top:
       </p>
     </div>
 
-    <div class="map-wrap reveal">
+    <div class="globe-scene reveal">
+      <span class="corner c-tl"></span>
+      <span class="corner c-tr"></span>
+      <span class="corner c-bl"></span>
+      <span class="corner c-br"></span>
+      <span class="globe-label">LIVE · 42 ACTIVE CORRIDORS · DRAG TO ROTATE</span>
+      <div class="globe" id="globe">
+        <div class="lat l1"></div>
+        <div class="lat l2"></div>
+        <div class="lat l3"></div>
+        <div class="lat l4"></div>
+        <div class="lat l5"></div>
+        <div class="ring m m1"></div>
+        <div class="ring m m2"></div>
+        <div class="ring m m3"></div>
+        <div class="ring m m4"></div>
+        <div class="ring m m5"></div>
+        <div class="ring m m6"></div>
+        <div class="ring m m7"></div>
+        <div class="ring m m8"></div>
+        <div class="ring eq"></div>
+        <div class="hub" style="--lat:25deg;--lon:55deg"></div>
+        <div class="hub" style="--lat:-4deg;--lon:37deg"></div>
+        <div class="hub" style="--lat:30deg;--lon:31deg"></div>
+        <div class="hub" style="--lat:41deg;--lon:69deg"></div>
+        <div class="hub" style="--lat:43deg;--lon:77deg"></div>
+        <div class="hub" style="--lat:28deg;--lon:77deg"></div>
+        <div class="hub" style="--lat:14deg;--lon:100deg"></div>
+        <div class="hub" style="--lat:-6deg;--lon:107deg"></div>
+        <div class="hub" style="--lat:14deg;--lon:121deg"></div>
+        <div class="hub" style="--lat:-18deg;--lon:-68deg"></div>
+        <div class="hub" style="--lat:18deg;--lon:-70deg"></div>
+        <div class="hub" style="--lat:14deg;--lon:-88deg"></div>
+        <div class="hub" style="--lat:9deg;--lon:-13deg"></div>
+        <div class="hub" style="--lat:-15deg;--lon:28deg"></div>
+        <div class="hub" style="--lat:-17deg;--lon:31deg"></div>
+      </div>
+      <div class="globe-hud">
+        <span>LAT 00°</span><span class="sep">·</span>
+        <span>LON 00°</span><span class="sep">·</span>
+        <span>ALT GDP</span><span class="sep">·</span>
+        <span>SIGNAL LIVE</span>
+      </div>
+    </div>
+
+    <div class="map-wrap reveal" style="display:none">
       <svg class="world-map" viewBox="0 0 1100 520" aria-hidden="true">
         <g class="dots">
           <!-- stylised world dot-map -->
@@ -1729,6 +1876,43 @@ rxForm.addEventListener('submit', (e)=>{
   rxMsg.textContent = "Code received — a partnership officer will verify and reach out within 2 business days.";
   rxMsg.classList.add('show');
 });
+
+// Hologram globe — auto-rotate + drag to rotate
+const globe = document.getElementById('globe');
+if (globe) {
+  let rotY = 0, rotX = -14, speed = 0.18;
+  let dragging = false, lastX = 0, lastY = 0;
+  const hud = document.querySelector('.globe-hud');
+  const latEl = hud ? hud.children[0] : null;
+  const lonEl = hud ? hud.children[2] : null;
+  function apply(){
+    globe.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+    if (latEl) latEl.textContent = `LAT ${(rotX).toFixed(0)}°`;
+    if (lonEl) lonEl.textContent = `LON ${((rotY % 360 + 360) % 360).toFixed(0)}°`;
+  }
+  function tick(){
+    if (!dragging) rotY += speed;
+    apply();
+    requestAnimationFrame(tick);
+  }
+  globe.addEventListener('pointerdown', e=>{
+    dragging = true; lastX = e.clientX; lastY = e.clientY;
+    globe.classList.add('drag');
+    globe.setPointerCapture(e.pointerId);
+  });
+  globe.addEventListener('pointerup', e=>{
+    dragging = false;
+    globe.classList.remove('drag');
+    try { globe.releasePointerCapture(e.pointerId); } catch(_) {}
+  });
+  globe.addEventListener('pointermove', e=>{
+    if (!dragging) return;
+    rotY += (e.clientX - lastX) * 0.45;
+    rotX = Math.max(-70, Math.min(40, rotX + (e.clientY - lastY) * 0.3));
+    lastX = e.clientX; lastY = e.clientY;
+  });
+  tick();
+}
 
 // Video click-to-play (only loads iframe on click)
 const videoWrap = document.getElementById('videoWrap');
