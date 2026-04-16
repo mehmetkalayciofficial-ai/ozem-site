@@ -719,19 +719,27 @@ footer{background:var(--navy);color:var(--ivory);padding:80px 0 40px;border-top:
 }
 .earth-rotor{
   position:absolute;inset:0;z-index:1;
-  will-change:transform;
+  will-change:background-position;
+  background-image:url("earth.jpg"), url("earth.jpg");
+  background-repeat:no-repeat, no-repeat;
+  background-size:auto 140%, auto 140%;
+  background-position:0 center, 100% center;
+  filter:saturate(1.15) contrast(1.08) brightness(1.02);
 }
-.earth-rotor svg{
+.earth-hubs{
+  position:absolute;inset:0;z-index:2;
+  width:100%;height:100%;
+  will-change:transform;
+  pointer-events:none;
+}
+.earth-hubs svg{
   position:absolute;top:50%;left:0;
   height:140%;width:auto;
   transform:translateY(-50%);
   display:block;
 }
-.earth-rotor svg .land{fill:#6ec27a;opacity:.92}
-.earth-rotor svg .land-dark{fill:#3e8a52;opacity:.7}
-.earth-rotor svg .ocean-grid{stroke:rgba(120,200,230,.1);stroke-width:.5;fill:none}
-.earth-rotor svg .hub{fill:var(--teal-2);filter:drop-shadow(0 0 8px rgba(20,184,166,.9))}
-.earth-rotor svg .hub-ring{fill:none;stroke:var(--teal-2);stroke-width:1;opacity:.5}
+.earth-hubs .hub{fill:#14B8A6;filter:drop-shadow(0 0 8px rgba(20,184,166,1)) drop-shadow(0 0 14px rgba(20,184,166,.6))}
+.earth-hubs .hub-ring{fill:none;stroke:#14B8A6;stroke-width:1.2;opacity:.6}
 .earth-hud{
   position:absolute;bottom:18px;left:50%;transform:translateX(-50%);
   font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--teal-2);
@@ -1369,106 +1377,30 @@ footer{background:var(--navy);color:var(--ivory);padding:80px 0 40px;border-top:
       <span class="corner c-br"></span>
       <span class="earth-label">LIVE · 42 ACTIVE CORRIDORS · DRAG TO ROTATE</span>
       <div class="earth" id="earth">
-        <div class="earth-rotor" id="earthRotor">
-          <svg viewBox="0 0 2200 520" xmlns="http://www.w3.org/2000/svg">
+        <div class="earth-rotor" id="earthRotor"></div>
+        <div class="earth-hubs" id="earthHubs">
+          <svg viewBox="0 0 2560 640" xmlns="http://www.w3.org/2000/svg">
             <defs>
-              <g id="continents">
-                <!-- NORTH AMERICA -->
-                <g class="land">
-                  <path d="M 80 130 Q 60 110 90 95 L 140 80 Q 180 70 220 85 L 250 100 L 270 120 L 255 140 L 240 155 L 220 145 L 200 160 L 215 180 L 240 195 L 260 215 L 255 240 L 230 235 L 200 220 L 170 210 L 140 195 L 115 180 L 95 160 Z"/>
-                  <path d="M 230 240 L 255 250 L 270 270 L 265 295 L 250 310 L 230 295 L 215 275 L 220 255 Z"/>
-                  <circle cx="75" cy="75" r="10"/><circle cx="100" cy="60" r="12"/><circle cx="135" cy="55" r="8"/>
-                </g>
-                <!-- SOUTH AMERICA -->
-                <g class="land">
-                  <path d="M 260 295 Q 285 290 295 310 L 310 340 L 315 375 L 305 410 L 290 435 L 275 445 L 260 430 L 255 400 L 265 370 L 260 340 L 255 315 Z"/>
-                </g>
-                <!-- EUROPE -->
-                <g class="land">
-                  <path d="M 490 130 L 510 115 L 535 110 L 560 120 L 580 115 L 600 125 L 595 145 L 575 155 L 555 150 L 535 160 L 515 155 L 500 145 Z"/>
-                  <path d="M 520 95 L 540 85 L 560 90 L 555 105 L 535 108 L 520 102 Z"/>
-                  <circle cx="505" cy="105" r="6"/><circle cx="605" cy="135" r="5"/>
-                </g>
-                <!-- AFRICA -->
-                <g class="land">
-                  <path d="M 520 180 L 555 170 L 590 175 L 620 185 L 640 205 L 645 230 L 635 260 L 625 285 L 615 310 L 600 335 L 585 345 L 570 335 L 560 310 L 555 280 L 545 255 L 535 225 L 525 200 Z"/>
-                  <path d="M 635 250 L 660 245 L 670 265 L 655 280 L 640 270 Z"/>
-                </g>
-                <!-- ASIA (massive blob) -->
-                <g class="land">
-                  <path d="M 600 110 L 640 95 L 690 85 L 750 80 L 810 85 L 870 95 L 920 110 L 960 125 L 980 145 L 970 165 L 945 175 L 910 180 L 880 190 L 855 200 L 830 195 L 800 180 L 770 175 L 740 170 L 710 160 L 680 150 L 650 140 L 625 130 L 605 120 Z"/>
-                  <path d="M 680 170 L 720 180 L 760 195 L 790 210 L 810 230 L 795 250 L 770 255 L 745 245 L 720 230 L 700 215 L 685 195 Z"/>
-                  <path d="M 820 195 L 855 205 L 880 220 L 890 245 L 875 265 L 855 275 L 835 265 L 820 245 L 815 220 Z"/>
-                </g>
-                <!-- SOUTHEAST ASIA / INDONESIA -->
-                <g class="land">
-                  <circle cx="870" cy="270" r="7"/><circle cx="885" cy="280" r="6"/><circle cx="905" cy="285" r="9"/>
-                  <circle cx="925" cy="275" r="5"/><circle cx="895" cy="295" r="6"/><circle cx="915" cy="300" r="5"/>
-                  <circle cx="855" cy="245" r="5"/><circle cx="870" cy="240" r="4"/>
-                </g>
-                <!-- AUSTRALIA -->
-                <g class="land">
-                  <path d="M 930 310 L 970 300 L 1005 305 L 1025 320 L 1015 345 L 985 355 L 955 350 L 935 335 Z"/>
-                  <circle cx="1030" cy="375" r="6"/>
-                </g>
-                <!-- ANTARCTICA strip -->
-                <g class="land-dark">
-                  <path d="M 50 470 L 1080 470 L 1080 500 L 50 500 Z"/>
-                </g>
-                <!-- GREENLAND -->
-                <g class="land">
-                  <path d="M 380 65 L 420 55 L 450 65 L 445 85 L 420 95 L 395 85 Z"/>
-                </g>
-                <!-- MADAGASCAR -->
-                <g class="land">
-                  <circle cx="670" cy="300" r="4"/><circle cx="665" cy="310" r="3"/><circle cx="672" cy="318" r="3"/>
-                </g>
-                <!-- JAPAN / KOREA -->
-                <g class="land">
-                  <circle cx="945" cy="170" r="5"/><circle cx="955" cy="180" r="4"/><circle cx="935" cy="165" r="3"/>
-                </g>
-              </g>
-
               <g id="hubs">
-                <g class="hub-group"><circle class="hub-ring" cx="718" cy="188" r="10"/><circle class="hub" cx="718" cy="188" r="5"/></g>
-                <g class="hub-group"><circle class="hub-ring" cx="663" cy="263" r="10"/><circle class="hub" cx="663" cy="263" r="5"/></g>
-                <g class="hub-group"><circle class="hub-ring" cx="644" cy="173" r="10"/><circle class="hub" cx="644" cy="173" r="5"/></g>
-                <g class="hub-group"><circle class="hub-ring" cx="761" cy="142" r="10"/><circle class="hub" cx="761" cy="142" r="5"/></g>
-                <g class="hub-group"><circle class="hub-ring" cx="785" cy="179" r="10"/><circle class="hub" cx="785" cy="179" r="5"/></g>
-                <g class="hub-group"><circle class="hub-ring" cx="856" cy="220" r="10"/><circle class="hub" cx="856" cy="220" r="5"/></g>
-                <g class="hub-group"><circle class="hub-ring" cx="877" cy="277" r="10"/><circle class="hub" cx="877" cy="277" r="5"/></g>
-                <g class="hub-group"><circle class="hub-ring" cx="920" cy="220" r="10"/><circle class="hub" cx="920" cy="220" r="5"/></g>
-                <g class="hub-group"><circle class="hub-ring" cx="342" cy="306" r="10"/><circle class="hub" cx="342" cy="306" r="5"/></g>
-                <g class="hub-group"><circle class="hub-ring" cx="336" cy="208" r="10"/><circle class="hub" cx="336" cy="208" r="5"/></g>
-                <g class="hub-group"><circle class="hub-ring" cx="284" cy="220" r="10"/><circle class="hub" cx="284" cy="220" r="5"/></g>
-                <g class="hub-group"><circle class="hub-ring" cx="498" cy="217" r="10"/><circle class="hub" cx="498" cy="217" r="5"/></g>
-                <g class="hub-group"><circle class="hub-ring" cx="636" cy="304" r="10"/><circle class="hub" cx="636" cy="304" r="5"/></g>
-                <g class="hub-group"><circle class="hub-ring" cx="644" cy="311" r="10"/><circle class="hub" cx="644" cy="311" r="5"/></g>
+                <g><circle class="hub-ring" cx="1670" cy="231" r="12"/><circle class="hub" cx="1670" cy="231" r="6"/></g>
+                <g><circle class="hub-ring" cx="1543" cy="324" r="12"/><circle class="hub" cx="1543" cy="324" r="6"/></g>
+                <g><circle class="hub-ring" cx="1500" cy="213" r="12"/><circle class="hub" cx="1500" cy="213" r="6"/></g>
+                <g><circle class="hub-ring" cx="1771" cy="174" r="12"/><circle class="hub" cx="1771" cy="174" r="6"/></g>
+                <g><circle class="hub-ring" cx="1827" cy="167" r="12"/><circle class="hub" cx="1827" cy="167" r="6"/></g>
+                <g><circle class="hub-ring" cx="1827" cy="220" r="12"/><circle class="hub" cx="1827" cy="220" r="6"/></g>
+                <g><circle class="hub-ring" cx="1991" cy="270" r="12"/><circle class="hub" cx="1991" cy="270" r="6"/></g>
+                <g><circle class="hub-ring" cx="2040" cy="341" r="12"/><circle class="hub" cx="2040" cy="341" r="6"/></g>
+                <g><circle class="hub-ring" cx="2140" cy="270" r="12"/><circle class="hub" cx="2140" cy="270" r="6"/></g>
+                <g><circle class="hub-ring" cx="796" cy="377" r="12"/><circle class="hub" cx="796" cy="377" r="6"/></g>
+                <g><circle class="hub-ring" cx="782" cy="256" r="12"/><circle class="hub" cx="782" cy="256" r="6"/></g>
+                <g><circle class="hub-ring" cx="661" cy="270" r="12"/><circle class="hub" cx="661" cy="270" r="6"/></g>
+                <g><circle class="hub-ring" cx="1159" cy="267" r="12"/><circle class="hub" cx="1159" cy="267" r="6"/></g>
+                <g><circle class="hub-ring" cx="1480" cy="374" r="12"/><circle class="hub" cx="1480" cy="374" r="6"/></g>
+                <g><circle class="hub-ring" cx="1500" cy="381" r="12"/><circle class="hub" cx="1500" cy="381" r="6"/></g>
               </g>
             </defs>
-            <!-- ocean meridian grid (very subtle) -->
-            <g class="ocean-grid">
-              <line x1="0" y1="130" x2="2200" y2="130"/>
-              <line x1="0" y1="260" x2="2200" y2="260"/>
-              <line x1="0" y1="390" x2="2200" y2="390"/>
-              <line x1="183" y1="0" x2="183" y2="520"/>
-              <line x1="367" y1="0" x2="367" y2="520"/>
-              <line x1="550" y1="0" x2="550" y2="520"/>
-              <line x1="733" y1="0" x2="733" y2="520"/>
-              <line x1="917" y1="0" x2="917" y2="520"/>
-              <line x1="1100" y1="0" x2="1100" y2="520"/>
-              <line x1="1283" y1="0" x2="1283" y2="520"/>
-              <line x1="1467" y1="0" x2="1467" y2="520"/>
-              <line x1="1650" y1="0" x2="1650" y2="520"/>
-              <line x1="1833" y1="0" x2="1833" y2="520"/>
-              <line x1="2017" y1="0" x2="2017" y2="520"/>
-            </g>
-            <!-- two copies of continents for seamless loop -->
-            <use href="#continents" x="0"/>
-            <use href="#continents" x="1100"/>
-            <!-- hubs on both copies -->
             <use href="#hubs" x="0"/>
-            <use href="#hubs" x="1100"/>
+            <use href="#hubs" x="1280"/>
           </svg>
         </div>
       </div>
@@ -2021,23 +1953,25 @@ rxForm.addEventListener('submit', (e)=>{
   rxMsg.classList.add('show');
 });
 
-// Earth globe — seamless horizontal rotation + drag
+// Earth globe — seamless horizontal rotation + drag using Blue Marble texture
 const earth = document.getElementById('earth');
 const earthRotor = document.getElementById('earthRotor');
+const earthHubs = document.getElementById('earthHubs');
 if (earth && earthRotor) {
-  // compute loop width: one full continent copy width in pixels.
-  // svg is (2200x520), rendered at height = earth.height * 1.4, width auto keeps ratio.
-  // loop distance = (1100/520) * (earth.height * 1.4)
+  // Texture is 1280x640 equirectangular. Rendered at height = earth.height * 1.4, width keeps ratio.
+  // loop distance (one full texture width) in rendered px:
   const size = earth.clientWidth;
-  const loop = (1100 / 520) * (size * 1.4);
+  const renderedH = size * 1.4;
+  const loop = (1280 / 640) * renderedH;
   let x = 0, speed = 0.35;
   let dragging = false, lastX = 0;
   const hud = document.querySelector('.earth-hud');
   const lonEl = hud ? hud.children[0] : null;
   function apply(){
-    // wrap x into [0, loop)
     const wx = ((x % loop) + loop) % loop;
-    earthRotor.style.transform = `translateX(${-wx}px)`;
+    // move background image and hub overlay together
+    earthRotor.style.backgroundPosition = `${-wx}px center, ${loop - wx}px center`;
+    if (earthHubs) earthHubs.style.transform = `translateX(${-wx}px)`;
     if (lonEl) {
       const lon = Math.round((wx / loop) * 360) % 360;
       lonEl.textContent = `LON ${String(lon).padStart(3,'0')}°`;
@@ -2060,7 +1994,7 @@ if (earth && earthRotor) {
   });
   earth.addEventListener('pointermove', e=>{
     if (!dragging) return;
-    x -= (e.clientX - lastX) * 1.2;
+    x -= (e.clientX - lastX) * 1.4;
     lastX = e.clientX;
   });
   tick();
