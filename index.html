@@ -456,7 +456,7 @@ footer{background:var(--navy);color:var(--ivory);padding:80px 0 40px;border-top:
 .show-card{
   background:var(--paper);
   border:1px solid var(--line);
-  padding:40px 36px 36px;
+  padding:32px 28px 28px;
   position:relative;overflow:hidden;
   transition:transform .5s var(--ease), box-shadow .5s var(--ease);
 }
@@ -469,10 +469,10 @@ footer{background:var(--navy);color:var(--ivory);padding:80px 0 40px;border-top:
   font-family:var(--mono);font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--gray);
   padding:4px 10px;background:var(--ivory);
 }
-.show-card h3{font-family:var(--serif);font-size:44px;line-height:1;margin:14px 0 6px;color:var(--navy)}
+.show-card h3{font-family:var(--serif);font-size:clamp(28px,4vw,44px);line-height:1;margin:14px 0 6px;color:var(--navy)}
 .show-card .gen{font-size:14px;color:var(--gray);font-family:var(--serif);font-style:italic}
 .product-3d{
-  aspect-ratio:4/3;margin:28px 0 24px;
+  aspect-ratio:3/4;margin:28px 0 24px;max-height:320px;
   display:flex;align-items:center;justify-content:center;
   background:
     radial-gradient(ellipse at 50% 65%,rgba(13,148,136,.12),transparent 60%),
@@ -496,7 +496,7 @@ footer{background:var(--navy);color:var(--ivory);padding:80px 0 40px;border-top:
 }
 .show-specs{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;padding-top:22px;border-top:1px solid var(--line)}
 .show-spec .k{font-family:var(--mono);font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--gray)}
-.show-spec .v{font-family:var(--serif);font-size:18px;color:var(--navy);margin-top:4px}
+.show-spec .v{font-family:var(--serif);font-size:clamp(14px,1.6vw,18px);color:var(--navy);margin-top:4px}
 .show-card .card-link{
   margin-top:22px;display:inline-flex;align-items:center;gap:10px;
   font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.16em;color:var(--navy);
@@ -1430,6 +1430,11 @@ footer{background:var(--navy);color:var(--ivory);padding:80px 0 40px;border-top:
       <div class="review"><div class="stars">★★★☆☆</div><p>"Product quality is fine but the onboarding process took almost three weeks. For an urgent program that's too long. Would appreciate faster verification."</p><div class="who">T. Mbeki<span>Logistics · Johannesburg Clinic Group, South Africa</span></div></div>
       <div class="review"><div class="stars">★★☆☆☆</div><p>"Delivery was delayed twice. We had to source from another distributor to cover the gap. They apologised and the third shipment was fine, but first impressions matter."</p><div class="who">R. Osman<span>Supply Chain · Mogadishu Health Network, Somalia</span></div></div>
       <div class="review"><div class="stars">★★★★☆</div><p>"Good product, good documentation, but customs clearance in our country took longer than quoted. Not entirely their fault, but the estimate was optimistic."</p><div class="who">Dr. E. Castillo<span>Director · Guatemala City Hospital, Guatemala</span></div></div>
+      <div class="review"><div class="stars">★★☆☆☆</div><p>"Ordered in January, received mid-March. That's not two weeks. Product was fine once it arrived but the wait was unacceptable for our patients."</p><div class="who">Dr. S. Akter<span>Medical Lead · Chittagong Endocrine Clinic, Bangladesh</span></div></div>
+      <div class="review"><div class="stars">★★★☆☆</div><p>"Mixed experience. First order went smoothly. Second order sat in customs for 12 days with no update from their side. Had to chase them for information."</p><div class="who">N. Perera<span>Procurement · Colombo Care Network, Sri Lanka</span></div></div>
+      <div class="review"><div class="stars">★★☆☆☆</div><p>"Promised delivery by week 3, it came week 7. No proactive communication about the delay. We only found out when we called. Disappointing for a first order."</p><div class="who">Dr. J. Uwimana<span>Director · Kigali Medical Centre, Rwanda</span></div></div>
+      <div class="review"><div class="stars">★★★☆☆</div><p>"Packaging and product quality are solid. But lead times are longer than advertised. If you need something urgently, plan for extra buffer time."</p><div class="who">A. Mahmoud<span>Logistics · Alexandria Health Group, Egypt</span></div></div>
+      <div class="review"><div class="stars">★★★☆☆</div><p>"Communication was slow during transit. Once we finally received the shipment everything was in order, but the silence in between was stressful."</p><div class="who">Dr. L. Nguyen<span>QA · Hanoi Specialty Clinic, Vietnam</span></div></div>
     </div>
   </div>
 </section>
