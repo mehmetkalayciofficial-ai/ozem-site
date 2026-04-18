@@ -544,8 +544,8 @@ footer{background:var(--navy);color:var(--ivory);padding:80px 0 40px;border-top:
 .video-poster{
   position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
   background:
-    radial-gradient(circle at 50% 50%,rgba(13,148,136,.25),transparent 60%),
-    linear-gradient(135deg,var(--navy-3),var(--navy));
+    linear-gradient(0deg,rgba(10,22,40,.6) 0%,rgba(10,22,40,.15) 40%,rgba(10,22,40,.15) 60%,rgba(10,22,40,.5) 100%),
+    var(--yt-thumb) center/cover no-repeat;
   transition:opacity .4s var(--ease);
 }
 .video-poster .play{
@@ -1164,7 +1164,7 @@ footer{background:var(--navy);color:var(--ivory);padding:80px 0 40px;border-top:
       </p>
     </div>
 
-    <div class="video-wrap reveal" id="videoWrap" data-video-id="laPaezEsteI" role="button" tabindex="0" aria-label="Play clinical overview video">
+    <div class="video-wrap reveal" id="videoWrap" data-video-id="laPaezEsteI" style="--yt-thumb:url(https://img.youtube.com/vi/laPaezEsteI/maxresdefault.jpg)" role="button" tabindex="0" aria-label="Play clinical overview video">
       <div class="video-poster">
         <div class="play" aria-hidden="true"></div>
       </div>
@@ -1749,33 +1749,34 @@ rxForm.addEventListener('submit', (e)=>{
 const earth = document.getElementById('earth');
 const earthCanvas = document.getElementById('earthCanvas');
 if (earth && earthCanvas) {
-  const SIZE = Math.min(earth.clientWidth, 480) | 0;
-  const W = SIZE, H = SIZE, R = W / 2;
-  earthCanvas.width = W;
-  earthCanvas.height = H;
-  const ctx = earthCanvas.getContext('2d', { alpha: true });
+  function initGlobe() {
+    const SIZE = earth.clientWidth || earth.offsetWidth || 480;
+    if (SIZE < 10) { setTimeout(initGlobe, 100); return; }
+    const W = SIZE, H = SIZE, R = W / 2;
+    earthCanvas.width = W;
+    earthCanvas.height = H;
+    const ctx = earthCanvas.getContext('2d', { alpha: true });
 
-  let tex = null, tW = 0, tH = 0;
-  let yaw = 0, pitch = 0;
-  let dragging = false, lastX = 0, lastY = 0;
-  const autoSpeed = 0.0035;
+    let tex = null, tW = 0, tH = 0;
+    let yaw = 0, pitch = 0;
+    let dragging = false, lastX = 0, lastY = 0;
+    const autoSpeed = 0.0035;
 
-  const hud = document.querySelector('.earth-hud');
-  const lonEl = hud ? hud.children[0] : null;
+    const hud = document.querySelector('.earth-hud');
+    const lonEl = hud ? hud.children[0] : null;
 
-  // Load texture into an offscreen canvas and extract pixels
-  const img = new Image();
-  img.crossOrigin = 'anonymous';
-  img.src = 'earth.jpg';
-  img.onload = () => {
-    const off = document.createElement('canvas');
-    off.width = img.width; off.height = img.height;
-    const octx = off.getContext('2d');
-    octx.drawImage(img, 0, 0);
-    tex = octx.getImageData(0, 0, img.width, img.height).data;
-    tW = img.width; tH = img.height;
-    requestAnimationFrame(render);
-  };
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.src = 'earth.jpg';
+    img.onload = () => {
+      const off = document.createElement('canvas');
+      off.width = img.width; off.height = img.height;
+      const octx = off.getContext('2d');
+      octx.drawImage(img, 0, 0);
+      tex = octx.getImageData(0, 0, img.width, img.height).data;
+      tW = img.width; tH = img.height;
+      requestAnimationFrame(render);
+    };
 
   // Hubs to draw on sphere surface (lat, lon) in degrees
   const hubs = [
@@ -1883,6 +1884,8 @@ if (earth && earthCanvas) {
     if (pitch < -HALF_PI + 0.05) pitch = -HALF_PI + 0.05;
     lastX = e.clientX; lastY = e.clientY;
   });
+  } // end initGlobe
+  initGlobe();
 }
 
 // Video click-to-play (only loads iframe on click)
