@@ -574,12 +574,11 @@ footer{background:var(--navy);color:var(--ivory);padding:80px 0 40px;border-top:
 /* ---------- REVIEWS ---------- */
 .reviews{background:var(--ivory-2)}
 .reviews-grid{
-  columns:3;column-gap:24px;margin-top:56px;
+  display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:56px;
 }
 .review{
-  break-inside:avoid;page-break-inside:avoid;
   background:var(--paper);
-  padding:26px 28px;margin-bottom:24px;
+  padding:26px 28px;
   border:1px solid var(--line);
   position:relative;
   transition:transform .4s var(--ease),box-shadow .4s var(--ease);
@@ -870,7 +869,7 @@ footer{background:var(--navy);color:var(--ivory);padding:80px 0 40px;border-top:
   .features-table thead th{font-size:14px;padding:16px 18px}
   .features-table tbody th{width:auto;min-width:120px}
   .features-table td{min-width:180px}
-  .reviews-grid{columns:2}
+  .reviews-grid{grid-template-columns:repeat(2,1fr)}
   .rx-box{grid-template-columns:1fr;padding:28px 24px;gap:24px}
   .rx-box::before{font-size:48px;top:16px;right:20px}
   .rx-box h3{font-size:26px}
@@ -914,7 +913,7 @@ footer{background:var(--navy);color:var(--ivory);padding:80px 0 40px;border-top:
   .show-spec .v{font-size:14px}
   .earth{width:min(260px,75vw);height:min(260px,75vw)}
   .earth-scene{min-height:340px;padding:20px 0 30px}
-  .reviews-grid{columns:1}
+  .reviews-grid{grid-template-columns:1fr}
   .faq summary{font-size:17px;padding:0 10px;gap:12px}
   .faq-a{padding-left:44px;padding-right:10px;font-size:14px}
   .faq-tag{font-size:8px;padding:3px 8px}
